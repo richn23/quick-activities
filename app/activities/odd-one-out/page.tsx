@@ -88,7 +88,6 @@ export default function OddOneOutSetup() {
   const [cefrLevel, setCefrLevel] = useState("B1");
   const [aiPrompt, setAiPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isAIGenerated, setIsAIGenerated] = useState(false);
   const [expandedReasoning, setExpandedReasoning] = useState<Set<number>>(new Set());
 
   // Sets data - restore from sessionStorage if returning from whiteboard
@@ -226,7 +225,6 @@ export default function OddOneOutSetup() {
         // Clear cached data to prevent old selections from mixing with new AI data
         sessionStorage.removeItem("oddOneOutData");
         setSets(data.sets);
-        setIsAIGenerated(true);
         setExpandedReasoning(new Set()); // Reset expanded state
       }
     } catch (error) {

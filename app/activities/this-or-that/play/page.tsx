@@ -33,26 +33,6 @@ interface VoteData {
   };
 }
 
-// Crossfade animation - no gap between transitions
-const cardVariants = {
-  enter: (direction: number) => ({
-    x: direction > 0 ? 200 : -200,
-    opacity: 0,
-    scale: 0.98,
-  }),
-  center: {
-    x: 0,
-    opacity: 1,
-    scale: 1,
-  },
-  exit: (direction: number) => ({
-    x: direction > 0 ? -200 : 200,
-    opacity: 0,
-    scale: 0.98,
-  }),
-};
-
-
 export default function ThisOrThatPlay() {
   const router = useRouter();
   const [gameData, setGameData] = useState<GameData | null>(null);
