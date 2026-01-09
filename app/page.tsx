@@ -53,6 +53,7 @@ const activities = [
 export default function Home() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showCarousel, setShowCarousel] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   
   // Dark mode state - check document class synchronously to prevent flash
   const [isDark, setIsDark] = useState(() => {
@@ -84,6 +85,14 @@ export default function Home() {
   useEffect(() => {
     const timer = setTimeout(() => setShowCarousel(true), 800);
     return () => clearTimeout(timer);
+  }, []);
+
+  // Detect mobile screen size
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   // Keyboard navigation
@@ -224,7 +233,7 @@ export default function Home() {
             >
               {/* Cards */}
               <div
-                className="relative h-80 w-full max-w-xl flex items-center justify-center"
+                className="relative h-64 sm:h-80 w-full max-w-xl flex items-center justify-center"
                 style={{ perspective: "1000px" }}
               >
                 {activities.map((activity, index) => {
@@ -244,16 +253,20 @@ export default function Home() {
                   let zIndex = 0;
                   let cardOpacity = 0.5;
 
+                  // Use smaller offset on mobile
+                  const offsetX = isMobile ? 80 : 140;
+                  const sideScale = isMobile ? 0.7 : 0.8;
+
                   if (isActive) {
                     transform = "translateX(0) scale(1) rotateY(0deg)";
                     zIndex = 10;
                     cardOpacity = 1;
                   } else if (normalizedOffset === 1) {
-                    transform = "translateX(140px) scale(0.8) rotateY(-12deg)";
+                    transform = `translateX(${offsetX}px) scale(${sideScale}) rotateY(-12deg)`;
                     zIndex = 5;
                     cardOpacity = 0.6;
                   } else if (normalizedOffset === -1) {
-                    transform = "translateX(-140px) scale(0.8) rotateY(12deg)";
+                    transform = `translateX(-${offsetX}px) scale(${sideScale}) rotateY(12deg)`;
                     zIndex = 5;
                     cardOpacity = 0.6;
                   }
@@ -274,7 +287,7 @@ export default function Home() {
                     >
                       <div
                         className={`
-                          glass-card w-56 h-64 transition-all duration-500 relative overflow-hidden
+                          glass-card w-44 h-52 sm:w-56 sm:h-64 transition-all duration-500 relative overflow-hidden
                           ${isActive 
                             ? isDark 
                               ? "ring-2 ring-teal-400/50 shadow-[0_0_60px_rgba(45,212,191,0.15)]" 

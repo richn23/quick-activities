@@ -255,7 +255,7 @@ export default function ConnectionsPlay() {
           oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
           oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
           gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-          gainNode.gain.exponentialDecayTo && gainNode.gain.exponentialDecayTo(0.01, audioContext.currentTime + 0.4);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
           oscillator.start();
           oscillator.stop(audioContext.currentTime + 0.4);
           break;
@@ -320,12 +320,9 @@ export default function ConnectionsPlay() {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  // Get grid columns based on number of unsolved words
+  // Get grid columns based on number of unsolved words (responsive)
   const getGridCols = () => {
-    const count = unsolvedWords.length;
-    if (count <= 8) return "grid-cols-4";
-    if (count <= 12) return "grid-cols-4";
-    return "grid-cols-4";
+    return "grid-cols-2 sm:grid-cols-4";
   };
 
   const getDifficultyColor = (index: number) => {
