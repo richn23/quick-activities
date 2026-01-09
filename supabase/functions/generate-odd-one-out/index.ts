@@ -196,13 +196,24 @@ ${topicText}
 
 REQUIREMENTS:
 1. Every set MUST allow MORE THAN ONE valid odd-one-out choice
-2. Items should be related enough to form a group, but different enough to argue distinctions
-3. Avoid trivial category tests with only one obvious answer
-4. The reasoning examples MUST reference DIFFERENT items as the odd one out
-5. Each reasoning example should start with "X could be..." or "One could argue X..." — never "X is the answer"
-6. Vocabulary, abstraction, and complexity must align with the CEFR level
-7. Avoid culturally sensitive, offensive, or inappropriate content
-8. Do NOT include any "answer", "correct", "selected", or "oddOneOut" field — this activity is open-ended
+2. CRITICAL: At least 3 items MUST share a coherent, defensible connection — a grouping that students can discover and articulate through discussion, even if not immediately apparent
+3. Items should NOT all be equally unrelated — there must be a real pattern to find
+4. The 4th item should break the pattern in a discussable way, while still allowing alternative interpretations
+5. Avoid trivial category tests, but also avoid sets where ALL items are random/unrelated
+6. The reasoning examples MUST reference DIFFERENT items as the odd one out
+7. Each reasoning example should start with "X could be..." or "One could argue X..." — never "X is the answer"
+8. Vocabulary, abstraction, and complexity must align with the CEFR level
+9. Avoid culturally sensitive, offensive, or inappropriate content
+10. Do NOT include any "answer", "correct", "selected", or "oddOneOut" field — this activity is open-ended
+
+GOOD SET EXAMPLES:
+- Entrepreneur, Diplomat, Surgeon, Integrity → 3 professions + 1 abstract noun (but "Integrity" could also link to all jobs)
+- Whisper, Shout, Murmur, Silence → 3 ways of speaking + 1 absence of sound (but all relate to sound)
+- Marathon, Sprint, Hurdles, Spectator → 3 athletic events + 1 person (but all relate to athletics)
+
+BAD SET EXAMPLES (avoid these):
+- Serendipity, Ephemeral, Ubiquitous, Melancholy → All abstract, no clear grouping
+- Chair, Democracy, Tuesday, Purple → Random items with no connection
 
 ═══════════════════════════════════════════════════════════════
 JUSTIFICATION QUALITY RULES (STRICT)
