@@ -22,7 +22,7 @@ const activities = [
     icon: "🔗",
     gradient: "from-violet-500 to-purple-600",
     href: "/activities/connections",
-    ready: false,
+    ready: true,
   },
   {
     title: "What's the Question?",
