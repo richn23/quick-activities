@@ -446,16 +446,18 @@ export default function ConnectionsSetup() {
 
                   <div>
                     <label className="text-xs text-[var(--text-muted)] mb-2 block">
-                      Topic / Theme (1-2 words)
+                      Topic / Theme
                     </label>
                     <input
                       type="text"
                       value={aiPrompt}
                       onChange={(e) => setAiPrompt(e.target.value)}
-                      placeholder="e.g., sports, kitchen, travel, office..."
+                      placeholder="e.g., travel, hotels, food, transport..."
                       className="w-full p-4 rounded-xl bg-[var(--glass-bg)] border border-[var(--glass-border)] focus:border-teal-500 text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none transition-all"
-                      maxLength={30}
                     />
+                    <p className="text-xs text-[var(--text-muted)] mt-1 opacity-70">
+                      Generated words will be 1-2 words each
+                    </p>
                   </div>
                 </div>
               </div>
