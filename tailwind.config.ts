@@ -9,11 +9,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        background: "#0a0f1a",
+        surface: "#0d1321",
+        "surface-light": "#151d2e",
+      },
+      animation: {
+        "pulse-slow": "pulse 3s ease-in-out infinite",
       },
     },
   },
   plugins: [],
 };
+
 export default config;

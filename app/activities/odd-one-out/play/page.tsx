@@ -13,9 +13,7 @@ import {
   Pause,
   Volume2,
   Shuffle,
-  Eye,
   RotateCw,
-  Trophy
 } from "lucide-react";
 import Link from "next/link";
 import { SkyToggle } from "@/components/ui/sky-toggle";
@@ -46,7 +44,6 @@ export default function OddOneOutPlay() {
   const [timeLeft, setTimeLeft] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
   const [votes, setVotes] = useState<VoteData>({});
-  const [revealed, setRevealed] = useState<Set<number>>(new Set());
   const [shuffledSets, setShuffledSets] = useState<SetData[]>([]);
   const [direction, setDirection] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -104,23 +101,6 @@ export default function OddOneOutPlay() {
     }
   }, []);
 
-  const playRevealSound = useCallback(() => {
-    try {
-      const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      oscillator.frequency.value = 800;
-      oscillator.type = "sine";
-      gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.3);
-    } catch {
-      // Silent fail
-    }
-  }, []);
 
   // Load game data
   useEffect(() => {
@@ -183,12 +163,6 @@ export default function OddOneOutPlay() {
     }));
   };
 
-  // Reveal answer
-  const revealAnswer = (setIndex: number) => {
-    playRevealSound();
-    setRevealed(prev => new Set([...prev, setIndex]));
-  };
-
   // Get votes for a word
   const getVotes = (setIndex: number, wordIndex: number) => votes[setIndex]?.[wordIndex] || 0;
 
@@ -239,7 +213,6 @@ export default function OddOneOutPlay() {
     setDirection(-1);
     setCurrent(0);
     resetTimer();
-    setRevealed(new Set());
     setVotes({});
     setShuffledSets(gameData.sets.map(set => ({ ...set, words: [...set.words] })));
   };
@@ -300,47 +273,31 @@ export default function OddOneOutPlay() {
           <main className="flex-1 p-6 overflow-auto">
             <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
               {sets.map((set, setIdx) => {
-                const isRevealed = revealed.has(setIdx);
                 const totalVotes = getTotalVotes(setIdx);
                 
                 return (
                   <div key={setIdx} className="glass-card p-5">
                     <div className="flex items-center justify-between mb-4">
                       <span className="text-sm font-semibold text-orange-500">Set {setIdx + 1}</span>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => shuffleSet(setIdx)}
-                          className="p-2 rounded-lg glass-card text-[var(--text-muted)] hover:text-orange-500 transition-all"
-                          title="Shuffle"
-                        >
-                          <Shuffle size={16} />
-                        </button>
-                        {!isRevealed && (
-                          <button
-                            onClick={() => revealAnswer(setIdx)}
-                            className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-orange-500 to-rose-500 text-white text-sm font-semibold flex items-center gap-1 hover:opacity-90 transition-all"
-                          >
-                            <Eye size={14} /> Reveal
-                          </button>
-                        )}
-                      </div>
+                      <button
+                        onClick={() => shuffleSet(setIdx)}
+                        className="p-2 rounded-lg glass-card text-[var(--text-muted)] hover:text-orange-500 transition-all"
+                        title="Shuffle"
+                      >
+                        <Shuffle size={16} />
+                      </button>
                     </div>
 
                     <div className="grid grid-cols-2 gap-2">
                       {set.words.map((word, wordIdx) => {
                         const voteCount = getVotes(setIdx, wordIdx);
-                        const isOdd = wordIdx === set.oddOneOut;
                         const percentage = totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0;
 
                         return (
                           <button
                             key={wordIdx}
                             onClick={() => handleVote(setIdx, wordIdx)}
-                            className={`relative p-4 rounded-xl text-center font-semibold transition-all ${
-                              isRevealed && isOdd
-                                ? "bg-gradient-to-r from-orange-500 to-rose-500 text-white shadow-lg shadow-orange-500/25"
-                                : "glass-card text-[var(--text-primary)] hover:scale-105"
-                            }`}
+                            className="relative p-4 rounded-xl text-center font-semibold transition-all glass-card text-[var(--text-primary)] hover:scale-105"
                           >
                             <span className="text-lg">{word}</span>
                             {voteCount > 0 && (
@@ -348,13 +305,8 @@ export default function OddOneOutPlay() {
                                 {voteCount}
                               </span>
                             )}
-                            {isRevealed && isOdd && (
-                              <div className="absolute -top-2 -left-2 w-7 h-7 rounded-full bg-white text-orange-500 flex items-center justify-center shadow-lg">
-                                <Trophy size={14} />
-                              </div>
-                            )}
-                            {isRevealed && totalVotes > 0 && (
-                              <div className="mt-2 text-xs opacity-75">{percentage}%</div>
+                            {totalVotes > 0 && (
+                              <div className="mt-2 text-xs text-[var(--text-muted)]">{percentage}%</div>
                             )}
                           </button>
                         );
@@ -379,7 +331,6 @@ export default function OddOneOutPlay() {
 
   // ============ ONE AT A TIME VIEW ============
   const currentSet = sets[current];
-  const isCurrentRevealed = revealed.has(current);
   const currentTotalVotes = getTotalVotes(current);
 
   return (
@@ -453,7 +404,6 @@ export default function OddOneOutPlay() {
               >
                 {currentSet.words.map((word, wordIdx) => {
                   const voteCount = getVotes(current, wordIdx);
-                  const isOdd = wordIdx === currentSet.oddOneOut;
                   const percentage = currentTotalVotes > 0 ? Math.round((voteCount / currentTotalVotes) * 100) : 0;
 
                   return (
@@ -462,11 +412,7 @@ export default function OddOneOutPlay() {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleVote(current, wordIdx)}
-                      className={`relative p-6 md:p-8 rounded-2xl text-center font-bold transition-all ${
-                        isCurrentRevealed && isOdd
-                          ? "bg-gradient-to-r from-orange-500 to-rose-500 text-white shadow-2xl shadow-orange-500/30"
-                          : "glass-card text-[var(--text-primary)] hover:shadow-lg"
-                      }`}
+                      className="relative p-6 md:p-8 rounded-2xl text-center font-bold transition-all glass-card text-[var(--text-primary)] hover:shadow-lg"
                     >
                       <span className="text-xl md:text-2xl">{word}</span>
                       
@@ -481,20 +427,9 @@ export default function OddOneOutPlay() {
                         </motion.span>
                       )}
 
-                      {/* Winner badge */}
-                      {isCurrentRevealed && isOdd && (
-                        <motion.div
-                          initial={{ scale: 0, rotate: -180 }}
-                          animate={{ scale: 1, rotate: 0 }}
-                          className="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-white text-orange-500 flex items-center justify-center shadow-lg"
-                        >
-                          <Trophy size={20} />
-                        </motion.div>
-                      )}
-
-                      {/* Percentage after reveal */}
-                      {isCurrentRevealed && currentTotalVotes > 0 && (
-                        <div className="mt-2 text-sm opacity-75">{percentage}% voted</div>
+                      {/* Percentage when votes exist */}
+                      {currentTotalVotes > 0 && (
+                        <div className="mt-2 text-sm text-[var(--text-muted)]">{percentage}%</div>
                       )}
                     </motion.button>
                   );
@@ -503,27 +438,14 @@ export default function OddOneOutPlay() {
             </AnimatePresence>
           </div>
 
-          {/* Reveal Button */}
-          {!isCurrentRevealed && (
-            <motion.button
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              onClick={() => revealAnswer(current)}
-              className="mt-8 px-8 py-4 rounded-2xl bg-gradient-to-r from-orange-500 to-rose-500 text-white font-bold text-lg flex items-center gap-3 hover:scale-105 transition-all shadow-lg shadow-orange-500/25"
-            >
-              <Eye size={24} /> Reveal Answer
-            </motion.button>
-          )}
-
-          {isCurrentRevealed && (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="mt-6 text-lg text-[var(--text-secondary)]"
-            >
-              The odd one out was: <span className="font-bold text-orange-500">{currentSet.words[currentSet.oddOneOut]}</span>
-            </motion.p>
-          )}
+          {/* Hint for open-ended discussion */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-8 text-center text-[var(--text-muted)] text-sm"
+          >
+            Tap to vote • Discuss why each could be the odd one out
+          </motion.p>
         </main>
 
         {/* Bottom Controls */}
