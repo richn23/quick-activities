@@ -20,6 +20,12 @@ import { LabeledToggle } from "@/components/ui/labeled-toggle";
 import { AnimatedPaths } from "@/components/ui/animated-paths";
 import { supabase } from "@/lib/supabase";
 
+// Type for question/answer sets
+interface SetData {
+  question: string;
+  answer: string;
+}
+
 // Activity info content
 const activityInfo = {
   title: "What's the Question?",
@@ -79,7 +85,7 @@ export default function WhatsTheQuestionSetup() {
   const [isGenerating, setIsGenerating] = useState(false);
 
   // Sets data - question/answer pairs
-  const [sets, setSets] = useState(() => {
+  const [sets, setSets] = useState<SetData[]>(() => {
     // Try to load from sessionStorage first (when returning from whiteboard)
     if (typeof window !== 'undefined') {
       const stored = sessionStorage.getItem("whatsTheQuestionData");
