@@ -38,7 +38,7 @@ const activities = [
     icon: "📝",
     gradient: "from-emerald-400 to-teal-500",
     href: "/activities/cloze",
-    ready: false,
+    ready: true,
   },
   {
     title: "This or That",
