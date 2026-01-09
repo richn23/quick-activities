@@ -427,7 +427,6 @@ export default function OddOneOutSetup() {
                   onToggle={() => {
                     if (mode === "ai") {
                       // Switching to manual - reset AI state
-                      setIsAIGenerated(false);
                       setExpandedReasoning(new Set());
                     }
                     setMode(mode === "manual" ? "ai" : "manual");
