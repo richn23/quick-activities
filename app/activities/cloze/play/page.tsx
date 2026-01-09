@@ -364,7 +364,7 @@ export default function ClozePlay() {
                 value={userAnswer}
                 onChange={(e) => handleInputChange(currentGapIndex, e.target.value)}
                 disabled={showResults}
-                className={`w-24 sm:w-32 px-2 py-1 rounded-lg border-2 text-center font-medium outline-none transition-all ${
+                className={`w-28 sm:w-36 lg:w-40 px-3 py-2 rounded-lg border-2 text-center text-lg font-medium outline-none transition-all ${
                   showResults
                     ? isCorrect
                       ? "border-green-500 bg-green-500/10 text-green-400"
@@ -383,7 +383,7 @@ export default function ClozePlay() {
           return (
             <span
               key={index}
-              className={`inline-flex items-center justify-center mx-1 min-w-[80px] sm:min-w-[100px] h-8 px-2 rounded-lg border-2 border-dashed transition-all cursor-pointer ${
+              className={`inline-flex items-center justify-center mx-1 min-w-[100px] sm:min-w-[120px] lg:min-w-[140px] h-10 sm:h-12 px-3 rounded-lg border-2 border-dashed text-lg transition-all cursor-pointer ${
                 showResults
                   ? isCorrect
                     ? "border-green-500 bg-green-500/10"
@@ -432,7 +432,7 @@ export default function ClozePlay() {
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Header */}
         <header className="p-4 border-b border-[var(--glass-border)] bg-[var(--background)]/80 backdrop-blur-xl">
-          <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div className="max-w-6xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Link
                 href="/"
@@ -478,22 +478,22 @@ export default function ClozePlay() {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 flex flex-col p-4">
-          <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col">
+        <main className="flex-1 flex flex-col p-4 sm:p-6">
+          <div className="max-w-6xl mx-auto w-full flex-1 flex flex-col">
             {/* Text with gaps */}
-            <div className="glass-card p-6 sm:p-8 flex-1 mb-4">
-              <p className="text-lg sm:text-xl leading-relaxed text-[var(--text-primary)]">
+            <div className="glass-card p-6 sm:p-10 flex-1 mb-4">
+              <p className="text-xl sm:text-2xl lg:text-3xl leading-relaxed text-[var(--text-primary)]">
                 {renderText()}
               </p>
             </div>
 
             {/* Word Bank (if applicable) */}
             {gameData.mode === "wordbank" && !showResults && (
-              <div className="glass-card p-4 mb-4">
-                <label className="text-sm text-[var(--text-muted)] mb-3 block font-medium">
+              <div className="glass-card p-4 sm:p-6 mb-4">
+                <label className="text-sm sm:text-base text-[var(--text-muted)] mb-3 block font-medium">
                   Word Bank {selectedWord && <span className="text-emerald-400">(tap a gap to place)</span>}
                 </label>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3">
                   {wordBankWords.map((word, index) => {
                     const isUsed = usedWords.has(word);
                     const isSelected = selectedWord === word;
@@ -505,7 +505,7 @@ export default function ClozePlay() {
                         onDragStart={() => handleDragStart(word)}
                         onDragEnd={() => setDraggedWord(null)}
                         onClick={() => handleWordClick(word)}
-                        className={`px-4 py-2 rounded-xl font-medium transition-all ${
+                        className={`px-5 py-3 rounded-xl text-lg font-medium transition-all ${
                           isUsed
                             ? "bg-[var(--glass-bg)] text-[var(--text-muted)] opacity-40 cursor-not-allowed"
                             : isSelected
@@ -596,7 +596,7 @@ export default function ClozePlay() {
         {/* Progress indicator */}
         {!showResults && (
           <div className="p-4 border-t border-[var(--glass-border)] bg-[var(--background)]/80 backdrop-blur-xl">
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-6xl mx-auto">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm text-[var(--text-muted)]">Progress</span>
                 <span className="text-sm text-[var(--text-muted)]">

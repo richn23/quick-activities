@@ -297,8 +297,8 @@ export default function ThisOrThatPlay() {
           </header>
 
           {/* Results Content */}
-          <main className="flex-1 p-4 overflow-auto">
-            <div className="max-w-4xl mx-auto">
+          <main className="flex-1 p-4 sm:p-6 overflow-auto">
+            <div className="max-w-6xl mx-auto">
               {/* Total Stats */}
               <div className="glass-card p-6 mb-6 text-center animate-waterfall animate-waterfall-1">
                 <p className="text-[var(--text-muted)] text-sm uppercase tracking-wide mb-2">Total Votes Recorded</p>
@@ -430,8 +430,8 @@ export default function ThisOrThatPlay() {
           </header>
 
           {/* All Sets */}
-          <main className="flex-1 p-4 overflow-auto">
-            <div className="max-w-5xl mx-auto space-y-4">
+          <main className="flex-1 p-4 sm:p-6 overflow-auto">
+            <div className="max-w-6xl mx-auto space-y-4">
               {sets.map((set, setIdx) => (
                 <motion.div
                   key={setIdx}

@@ -282,7 +282,7 @@ export default function WhatsTheQuestionPlay() {
                     className="relative cursor-pointer group"
                     style={{ 
                       perspective: "1200px",
-                      minHeight: sets.length <= 4 ? "220px" : sets.length <= 6 ? "180px" : "160px"
+                      minHeight: sets.length <= 4 ? "280px" : sets.length <= 6 ? "220px" : "180px"
                     }}
                   >
                     <motion.div
@@ -425,7 +425,7 @@ export default function WhatsTheQuestionPlay() {
           )}
 
           {/* Flip Card */}
-          <div className="relative w-full max-w-2xl min-h-[350px] md:min-h-[400px]">
+          <div className="relative w-full max-w-4xl min-h-[400px] md:min-h-[500px]">
             <AnimatePresence initial={false}>
               <motion.div
                 key={current}

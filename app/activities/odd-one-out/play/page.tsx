@@ -270,25 +270,25 @@ export default function OddOneOutPlay() {
           )}
 
           {/* All Sets Grid */}
-          <main className="flex-1 p-6 overflow-auto">
-            <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+          <main className="flex-1 p-6 sm:p-8 overflow-auto">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
               {sets.map((set, setIdx) => {
                 const totalVotes = getTotalVotes(setIdx);
                 
                 return (
-                  <div key={setIdx} className="glass-card p-5">
+                  <div key={setIdx} className="glass-card p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <span className="text-sm font-semibold text-orange-500">Set {setIdx + 1}</span>
+                      <span className="text-base font-semibold text-orange-500">Set {setIdx + 1}</span>
                       <button
                         onClick={() => shuffleSet(setIdx)}
                         className="p-2 rounded-lg glass-card text-[var(--text-muted)] hover:text-orange-500 transition-all"
                         title="Shuffle"
                       >
-                        <Shuffle size={16} />
+                        <Shuffle size={18} />
                       </button>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-3">
                       {set.words.map((word, wordIdx) => {
                         const voteCount = getVotes(setIdx, wordIdx);
                         const percentage = totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0;
@@ -297,9 +297,9 @@ export default function OddOneOutPlay() {
                           <button
                             key={wordIdx}
                             onClick={() => handleVote(setIdx, wordIdx)}
-                            className="relative p-4 rounded-xl text-center font-semibold transition-all glass-card text-[var(--text-primary)] hover:scale-105"
+                            className="relative p-5 rounded-xl text-center font-semibold transition-all glass-card text-[var(--text-primary)] hover:scale-105"
                           >
-                            <span className="text-lg">{word}</span>
+                            <span className="text-xl">{word}</span>
                             {voteCount > 0 && (
                               <span className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-gradient-to-r from-orange-500 to-rose-500 text-white text-xs font-bold flex items-center justify-center shadow-lg">
                                 {voteCount}
@@ -392,7 +392,7 @@ export default function OddOneOutPlay() {
           </button>
 
           {/* Words Grid */}
-          <div className="relative w-full max-w-4xl">
+          <div className="relative w-full max-w-6xl">
             <AnimatePresence initial={false}>
               <motion.div
                 key={current}
@@ -400,7 +400,7 @@ export default function OddOneOutPlay() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: direction > 0 ? -100 : 100 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="grid grid-cols-2 md:grid-cols-4 gap-4"
+                className="grid grid-cols-2 md:grid-cols-4 gap-5"
               >
                 {currentSet.words.map((word, wordIdx) => {
                   const voteCount = getVotes(current, wordIdx);
@@ -412,9 +412,9 @@ export default function OddOneOutPlay() {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleVote(current, wordIdx)}
-                      className="relative p-6 md:p-8 rounded-2xl text-center font-bold transition-all glass-card text-[var(--text-primary)] hover:shadow-lg"
+                      className="relative p-8 md:p-10 rounded-2xl text-center font-bold transition-all glass-card text-[var(--text-primary)] hover:shadow-lg"
                     >
-                      <span className="text-xl md:text-2xl">{word}</span>
+                      <span className="text-2xl md:text-3xl lg:text-4xl">{word}</span>
                       
                       {/* Vote count badge */}
                       {voteCount > 0 && (
