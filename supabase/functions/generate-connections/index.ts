@@ -14,6 +14,7 @@ interface GenerateConnectionsRequestBody {
   cefr_level?: string;
   num_sets?: number;
   topic?: string;
+  exclude_words?: string[];
 }
 
 interface AnthropicResponse {
@@ -107,6 +108,7 @@ serve(async (req) => {
       cefr_level = "B1",
       num_sets = 4,
       topic = "",
+      exclude_words = [],
     } = body;
 
     if (!ANTHROPIC_API_KEY) {
@@ -120,6 +122,11 @@ serve(async (req) => {
     const topicText = topic
       ? `THEME / TOPIC: ${topic}`
       : `THEME / TOPIC: Use varied, vocabulary-building categories suitable for ${cefr_level} level ESL students.`;
+
+    // Build exclusion list
+    const exclusionText = exclude_words.length > 0
+      ? `\n\nDO NOT USE THESE WORDS (already generated in this session):\n${exclude_words.join(", ")}`
+      : "";
 
     const aiPrompt = `You are generating word sets for a "Connections" game for a language classroom.
 
@@ -153,6 +160,8 @@ REQUIREMENTS:
 5. Some words may appear to belong to multiple groups (creates challenge)
 6. Vocabulary and categories must match the CEFR level
 7. Avoid offensive or inappropriate content
+8. Generate fresh, unexpected combinations - avoid common/predictable groupings
+${exclusionText}
 
 OUTPUT FORMAT (JSON only, no markdown, no explanation):
 {

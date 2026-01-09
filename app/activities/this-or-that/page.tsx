@@ -86,6 +86,7 @@ export default function ThisOrThatSetup() {
   const [cefrLevel, setCefrLevel] = useState("B1");
   const [aiPrompt, setAiPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [excludedSets, setExcludedSets] = useState<string[]>([]);
 
   // Sets data - restore from sessionStorage if returning from whiteboard
   const [sets, setSets] = useState<SetData[]>(() => {
@@ -188,6 +189,7 @@ export default function ThisOrThatSetup() {
           num_sets: numSets,
           options_per_set: optionsPerSet,
           topic: aiPrompt,
+          exclude_sets: excludedSets,
         }
       });
 
@@ -195,6 +197,9 @@ export default function ThisOrThatSetup() {
 
       if (data?.sets) {
         setSets(data.sets);
+        // Track generated content to avoid repetition on regenerate
+        const newExclusions = data.sets.map((set: SetData) => set.options.join(" vs "));
+        setExcludedSets(prev => [...prev, ...newExclusions]);
       }
     } catch (error) {
       console.error('AI generation failed:', error);

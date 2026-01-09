@@ -85,6 +85,7 @@ export default function ConnectionsSetup() {
   const [cefrLevel, setCefrLevel] = useState("B1");
   const [aiPrompt, setAiPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [excludedWords, setExcludedWords] = useState<string[]>([]);
 
   // Sets data - restore from sessionStorage if returning from whiteboard
   const [sets, setSets] = useState<SetData[]>(() => {
@@ -202,6 +203,7 @@ export default function ConnectionsSetup() {
           cefr_level: cefrLevel,
           num_sets: numSets,
           topic: aiPrompt,
+          exclude_words: excludedWords,
         }
       });
 
@@ -213,6 +215,9 @@ export default function ConnectionsSetup() {
           ...set,
           difficulty: index,
         })));
+        // Track generated words to avoid repetition on regenerate
+        const newWords = data.sets.flatMap((set: { words: string[] }) => set.words);
+        setExcludedWords(prev => [...prev, ...newWords]);
       }
     } catch (error) {
       console.error('AI generation failed:', error);

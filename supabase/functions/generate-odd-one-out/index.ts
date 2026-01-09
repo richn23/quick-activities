@@ -15,6 +15,7 @@ interface GenerateOddOneOutRequestBody {
   num_sets?: number;
   items_per_set?: number;
   topic?: string;
+  exclude_items?: string[];
 }
 
 interface AnthropicResponse {
@@ -111,6 +112,7 @@ serve(async (req) => {
       num_sets = 4,
       items_per_set = 4,
       topic = "",
+      exclude_items = [],
     } = body;
 
     if (!ANTHROPIC_API_KEY) {
@@ -124,6 +126,11 @@ serve(async (req) => {
     const topicText = topic 
       ? `THEME / TOPIC: ${topic}` 
       : `THEME / TOPIC: Use varied, discussion-friendly categories suitable for ${cefr_level}.`;
+
+    // Build exclusion list
+    const exclusionText = exclude_items.length > 0
+      ? `\n\nDO NOT USE THESE ITEMS (already generated in this session):\n${exclude_items.join(", ")}`
+      : "";
 
     // CEFR-specific reasoning guidance
     let reasoningGuidance = "";
@@ -205,6 +212,8 @@ REQUIREMENTS:
 8. Vocabulary, abstraction, and complexity must align with the CEFR level
 9. Avoid culturally sensitive, offensive, or inappropriate content
 10. Do NOT include any "answer", "correct", "selected", or "oddOneOut" field — this activity is open-ended
+11. Generate fresh, unexpected combinations - avoid common/predictable groupings
+${exclusionText}
 
 GOOD SET EXAMPLES:
 - Entrepreneur, Diplomat, Surgeon, Integrity → 3 professions + 1 abstract noun (but "Integrity" could also link to all jobs)

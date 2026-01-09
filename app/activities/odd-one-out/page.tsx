@@ -89,6 +89,7 @@ export default function OddOneOutSetup() {
   const [aiPrompt, setAiPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [expandedReasoning, setExpandedReasoning] = useState<Set<number>>(new Set());
+  const [excludedItems, setExcludedItems] = useState<string[]>([]);
 
   // Sets data - restore from sessionStorage if returning from whiteboard
   const [sets, setSets] = useState<SetData[]>(() => {
@@ -216,6 +217,7 @@ export default function OddOneOutSetup() {
           num_sets: numSets,
           items_per_set: wordsPerSet,
           topic: aiPrompt,
+          exclude_items: excludedItems,
         }
       });
 
@@ -226,6 +228,9 @@ export default function OddOneOutSetup() {
         sessionStorage.removeItem("oddOneOutData");
         setSets(data.sets);
         setExpandedReasoning(new Set()); // Reset expanded state
+        // Track generated items to avoid repetition on regenerate
+        const newItems = data.sets.flatMap((set: { words: string[] }) => set.words);
+        setExcludedItems(prev => [...prev, ...newItems]);
       }
     } catch (error) {
       console.error('AI generation failed:', error);

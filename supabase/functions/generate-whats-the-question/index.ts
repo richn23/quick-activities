@@ -14,6 +14,7 @@ interface GenerateWhatsTheQuestionRequestBody {
   cefr_level?: string;
   num_items?: number;
   topic?: string;
+  exclude_questions?: string[];
 }
 
 interface AnthropicResponse {
@@ -109,6 +110,7 @@ serve(async (req) => {
       cefr_level = "B1", 
       num_items = 5,
       topic = "",
+      exclude_questions = [],
     } = body;
 
     if (!ANTHROPIC_API_KEY) {
@@ -117,6 +119,11 @@ serve(async (req) => {
         { status: 500 }
       );
     }
+
+    // Build exclusion list
+    const exclusionText = exclude_questions.length > 0
+      ? `\n\nDO NOT USE THESE QUESTION TYPES OR SIMILAR TOPICS (already generated):\n${exclude_questions.join("\n")}`
+      : "";
 
     // Build topic guidance
     const topicText = topic 
@@ -152,6 +159,8 @@ REQUIREMENTS:
 4. Encourage discussion, comparison, and justification
 5. Keep vocabulary, grammar, and abstraction aligned to the CEFR level
 6. Answers should feel like real learner responses (not identical, not robotic)
+7. Generate fresh, unexpected questions - avoid common/predictable combinations
+${exclusionText}
 
 OUTPUT FORMAT (JSON only, no markdown, no explanation):
 {

@@ -83,6 +83,7 @@ export default function WhatsTheQuestionSetup() {
   const [cefrLevel, setCefrLevel] = useState("B1");
   const [aiPrompt, setAiPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [excludedQuestions, setExcludedQuestions] = useState<string[]>([]);
 
   // Sets data - question/answer pairs
   const [sets, setSets] = useState<SetData[]>(() => {
@@ -176,6 +177,7 @@ export default function WhatsTheQuestionSetup() {
           cefr_level: cefrLevel,
           num_items: numSets,
           topic: aiPrompt,
+          exclude_questions: excludedQuestions,
         }
       });
 
@@ -183,6 +185,9 @@ export default function WhatsTheQuestionSetup() {
 
       if (data?.sets) {
         setSets(data.sets);
+        // Track generated questions to avoid repetition on regenerate
+        const newQuestions = data.sets.map((set: SetData) => set.question);
+        setExcludedQuestions(prev => [...prev, ...newQuestions]);
       }
     } catch (error) {
       console.error('AI generation failed:', error);

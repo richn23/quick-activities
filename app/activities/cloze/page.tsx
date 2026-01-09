@@ -102,6 +102,7 @@ export default function ClozeSetup() {
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiWordCount, setAiWordCount] = useState(100);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [excludedThemes, setExcludedThemes] = useState<string[]>([]);
 
   // Parse text into words
   const words = useMemo(() => {
@@ -189,6 +190,7 @@ export default function ClozeSetup() {
           word_count: aiWordCount,
           topic: aiPrompt,
           include_distractors: includeDistractors,
+          exclude_themes: excludedThemes,
         }
       });
 
@@ -205,6 +207,10 @@ export default function ClozeSetup() {
         if (data.distractors) {
           setDistractors(data.distractors);
         }
+        // Track generated theme to avoid repetition on regenerate
+        // Extract a brief theme description from the first ~20 words of generated text
+        const themeHint = data.text.split(/\s+/).slice(0, 20).join(" ") + "...";
+        setExcludedThemes(prev => [...prev, themeHint]);
       }
     } catch (error) {
       console.error('AI generation failed:', error);

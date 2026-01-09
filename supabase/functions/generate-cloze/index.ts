@@ -15,6 +15,7 @@ interface GenerateClozeRequestBody {
   word_count?: number;
   topic?: string;
   include_distractors?: boolean;
+  exclude_themes?: string[];
 }
 
 interface AnthropicResponse {
@@ -109,6 +110,7 @@ serve(async (req) => {
       word_count = 100,
       topic = "",
       include_distractors = false,
+      exclude_themes = [],
     } = body;
 
     if (!ANTHROPIC_API_KEY) {
@@ -117,6 +119,11 @@ serve(async (req) => {
         { status: 500 }
       );
     }
+
+    // Build exclusion list for themes
+    const exclusionText = exclude_themes.length > 0
+      ? `\n\nDO NOT USE THESE THEMES/SCENARIOS (already generated):\n${exclude_themes.join("\n")}`
+      : "";
 
     // Build topic guidance
     const topicText = topic
@@ -154,6 +161,8 @@ REQUIREMENTS:
 4. Avoid removing the first or last word of a sentence
 5. Don't remove proper nouns or numbers
 6. Gaps should be distributed throughout the text
+7. Generate fresh, unique content - avoid common/overused scenarios
+${exclusionText}
 ${distractorInstruction}
 
 OUTPUT FORMAT (JSON only, no markdown, no explanation):
