@@ -54,6 +54,7 @@ export default function ClozePlay() {
   
   // Results
   const [showResults, setShowResults] = useState(false);
+  const [showAnswers, setShowAnswers] = useState(false);
   const [results, setResults] = useState<boolean[]>([]);
 
   // Load game data
@@ -313,6 +314,7 @@ export default function ClozePlay() {
       setUsedWords(new Set());
       setSelectedWord(null);
       setShowResults(false);
+      setShowAnswers(false);
       setResults([]);
       if (gameData.timerEnabled) {
         setTimeLeft(gameData.timerSeconds);
@@ -371,7 +373,7 @@ export default function ClozePlay() {
                 }`}
                 placeholder="..."
               />
-              {showResults && !isCorrect && (
+              {showAnswers && !isCorrect && (
                 <span className="text-xs text-green-400 ml-1">({correctAnswer})</span>
               )}
             </span>
@@ -410,7 +412,7 @@ export default function ClozePlay() {
               ) : (
                 <span className="text-[var(--text-muted)] text-sm">____</span>
               )}
-              {showResults && !isCorrect && (
+              {showAnswers && !isCorrect && (
                 <span className="text-xs text-green-400 ml-1">({correctAnswer})</span>
               )}
             </span>
@@ -551,7 +553,15 @@ export default function ClozePlay() {
                     <span className="text-lg text-[var(--text-muted)] ml-2">({percentage}%)</span>
                   </div>
 
-                  <div className="flex gap-4 justify-center">
+                  <div className="flex flex-wrap gap-3 justify-center">
+                    {!showAnswers && (
+                      <button
+                        onClick={() => setShowAnswers(true)}
+                        className="px-6 py-3 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 font-semibold transition-all flex items-center gap-2"
+                      >
+                        Reveal Answers
+                      </button>
+                    )}
                     <button
                       onClick={handleReset}
                       className="px-6 py-3 rounded-xl glass-card text-[var(--text-primary)] hover:text-emerald-500 font-semibold transition-all flex items-center gap-2"
