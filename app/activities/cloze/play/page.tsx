@@ -481,19 +481,19 @@ export default function ClozePlay() {
         <main className="flex-1 flex flex-col p-4 sm:p-6">
           <div className="max-w-6xl mx-auto w-full flex-1 flex flex-col">
             {/* Text with gaps */}
-            <div className="glass-card p-6 sm:p-10 flex-1 mb-4">
-              <p className="text-xl sm:text-2xl lg:text-3xl leading-relaxed text-[var(--text-primary)]">
+            <div className="glass-card p-8 sm:p-12 flex-1 mb-4">
+              <p className="text-2xl sm:text-3xl lg:text-4xl leading-relaxed text-[var(--text-primary)]">
                 {renderText()}
               </p>
             </div>
 
             {/* Word Bank (if applicable) */}
             {gameData.mode === "wordbank" && !showResults && (
-              <div className="glass-card p-4 sm:p-6 mb-4">
-                <label className="text-sm sm:text-base text-[var(--text-muted)] mb-3 block font-medium">
+              <div className="glass-card p-5 sm:p-8 mb-4">
+                <label className="text-base sm:text-lg text-[var(--text-muted)] mb-4 block font-medium">
                   Word Bank {selectedWord && <span className="text-emerald-400">(tap a gap to place)</span>}
                 </label>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-4">
                   {wordBankWords.map((word, index) => {
                     const isUsed = usedWords.has(word);
                     const isSelected = selectedWord === word;
@@ -505,7 +505,7 @@ export default function ClozePlay() {
                         onDragStart={() => handleDragStart(word)}
                         onDragEnd={() => setDraggedWord(null)}
                         onClick={() => handleWordClick(word)}
-                        className={`px-5 py-3 rounded-xl text-lg font-medium transition-all ${
+                        className={`px-6 py-4 rounded-xl text-xl md:text-2xl font-medium transition-all ${
                           isUsed
                             ? "bg-[var(--glass-bg)] text-[var(--text-muted)] opacity-40 cursor-not-allowed"
                             : isSelected
@@ -520,7 +520,7 @@ export default function ClozePlay() {
                     );
                   })}
                 </div>
-                <p className="text-xs text-[var(--text-muted)] mt-3">
+                <p className="text-sm text-[var(--text-muted)] mt-4">
                   Tap a word to select, then tap a gap • Or drag and drop
                 </p>
               </div>

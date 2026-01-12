@@ -399,8 +399,8 @@ export default function ConnectionsPlay() {
         </header>
 
         {/* Main Game Area */}
-        <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6">
-          <div className="w-full max-w-5xl">
+        <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8">
+          <div className="w-full max-w-7xl">
             {/* Solved Sets */}
             <AnimatePresence>
               {solvedSets.length > 0 && (
@@ -415,10 +415,10 @@ export default function ConnectionsPlay() {
                           key={setIndex}
                           initial={{ opacity: 0, y: -20, scale: 0.9 }}
                           animate={{ opacity: 1, y: 0, scale: 1 }}
-                          className={`p-5 sm:p-6 rounded-2xl ${color.bg} ${color.text} text-center`}
+                          className={`p-6 sm:p-8 rounded-2xl ${color.bg} ${color.text} text-center`}
                         >
-                          <div className="font-bold text-xl sm:text-2xl mb-1">{set.category}</div>
-                          <div className="text-base sm:text-lg opacity-90">
+                          <div className="font-bold text-2xl sm:text-3xl mb-2">{set.category}</div>
+                          <div className="text-lg sm:text-xl opacity-90">
                             {set.words.join(" • ")}
                           </div>
                         </motion.div>
@@ -456,7 +456,7 @@ export default function ConnectionsPlay() {
 
             {/* Word Grid */}
             {!gameComplete && unsolvedWords.length > 0 && (
-              <div className={`grid ${getGridCols()} gap-3`}>
+              <div className={`grid ${getGridCols()} gap-4 md:gap-5`}>
                 <AnimatePresence mode="popLayout">
                   {unsolvedWords.map((item) => {
                     const isSelected = selectedWords.includes(item.word);
@@ -477,7 +477,7 @@ export default function ConnectionsPlay() {
                         }}
                         onClick={() => handleWordClick(item.word)}
                         disabled={feedback !== null}
-                        className={`p-5 sm:p-6 rounded-2xl font-bold text-center transition-all uppercase tracking-wide ${
+                        className={`p-6 sm:p-8 rounded-2xl font-bold text-center transition-all uppercase tracking-wide ${
                           isSelected
                             ? "bg-teal-500 text-white shadow-lg shadow-teal-500/30 scale-[1.02]"
                             : "glass-card text-[var(--text-primary)] hover:bg-[var(--surface-light)] hover:scale-[1.02]"
@@ -487,7 +487,7 @@ export default function ConnectionsPlay() {
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          fontSize: item.word.length > 10 ? "0.9rem" : item.word.length > 7 ? "1.1rem" : "1.25rem",
+                          fontSize: item.word.length > 10 ? "1.1rem" : item.word.length > 7 ? "1.4rem" : "1.75rem",
                         }}
                       >
                         {item.word}

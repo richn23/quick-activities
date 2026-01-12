@@ -412,9 +412,9 @@ export default function OddOneOutPlay() {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleVote(current, wordIdx)}
-                      className="relative p-8 md:p-10 rounded-2xl text-center font-bold transition-all glass-card text-[var(--text-primary)] hover:shadow-lg"
+                      className="relative p-10 md:p-12 rounded-2xl text-center font-bold transition-all glass-card text-[var(--text-primary)] hover:shadow-lg"
                     >
-                      <span className="text-2xl md:text-3xl lg:text-4xl">{word}</span>
+                      <span className="text-3xl md:text-4xl lg:text-5xl">{word}</span>
                       
                       {/* Vote count badge */}
                       {voteCount > 0 && (

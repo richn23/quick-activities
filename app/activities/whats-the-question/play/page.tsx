@@ -425,7 +425,7 @@ export default function WhatsTheQuestionPlay() {
           )}
 
           {/* Flip Card */}
-          <div className="relative w-full max-w-4xl min-h-[400px] md:min-h-[500px]">
+          <div className="relative w-full max-w-5xl min-h-[450px] md:min-h-[550px]">
             <AnimatePresence initial={false}>
               <motion.div
                 key={current}
@@ -449,48 +449,48 @@ export default function WhatsTheQuestionPlay() {
                   >
                     {/* Front - Answer */}
                     <div
-                      className="absolute inset-0 glass-card p-6 md:p-10 flex flex-col items-center justify-center text-center overflow-hidden"
+                      className="absolute inset-0 glass-card p-8 md:p-12 flex flex-col items-center justify-center text-center overflow-hidden"
                       style={{ backfaceVisibility: "hidden" }}
                     >
-                      <span className="text-sm text-cyan-500 uppercase tracking-widest mb-4 font-semibold shrink-0">
+                      <span className="text-base md:text-lg text-cyan-500 uppercase tracking-widest mb-4 font-semibold shrink-0">
                         The Answer Is...
                       </span>
                       <span 
                         className="font-black text-[var(--text-primary)] leading-tight break-words max-w-full overflow-hidden flex-1 flex items-center px-4"
                         style={{ 
-                          fontSize: currentSet.answer.length > 150 ? '1.25rem' : currentSet.answer.length > 80 ? '1.75rem' : currentSet.answer.length > 40 ? '2.5rem' : '3rem',
+                          fontSize: currentSet.answer.length > 150 ? '1.5rem' : currentSet.answer.length > 80 ? '2.25rem' : currentSet.answer.length > 40 ? '3rem' : '4rem',
                           wordBreak: 'break-word'
                         }}
                       >
                         {currentSet.answer}
                       </span>
-                      <span className="mt-6 text-base text-[var(--text-muted)] flex items-center gap-2 shrink-0">
-                        <RotateCw size={18} /> Tap to reveal question
+                      <span className="mt-6 text-lg text-[var(--text-muted)] flex items-center gap-2 shrink-0">
+                        <RotateCw size={20} /> Tap to reveal question
                       </span>
                     </div>
 
                     {/* Back - Question */}
                     <div
-                      className="absolute inset-0 glass-card p-6 md:p-10 flex flex-col items-center justify-center text-center bg-gradient-to-br from-cyan-500/10 to-blue-500/10 overflow-hidden"
+                      className="absolute inset-0 glass-card p-8 md:p-12 flex flex-col items-center justify-center text-center bg-gradient-to-br from-cyan-500/10 to-blue-500/10 overflow-hidden"
                       style={{ 
                         backfaceVisibility: "hidden",
                         transform: "rotateY(180deg)"
                       }}
                     >
-                      <span className="text-sm text-blue-500 uppercase tracking-widest mb-4 font-semibold shrink-0">
+                      <span className="text-base md:text-lg text-blue-500 uppercase tracking-widest mb-4 font-semibold shrink-0">
                         The Question Is...
                       </span>
                       <span 
                         className="font-black text-[var(--text-primary)] leading-tight break-words max-w-full overflow-hidden flex-1 flex items-center px-4"
                         style={{ 
-                          fontSize: currentSet.question.length > 100 ? '1.25rem' : currentSet.question.length > 60 ? '1.5rem' : currentSet.question.length > 30 ? '2rem' : '2.25rem',
+                          fontSize: currentSet.question.length > 100 ? '1.5rem' : currentSet.question.length > 60 ? '2rem' : currentSet.question.length > 30 ? '2.75rem' : '3.25rem',
                           wordBreak: 'break-word'
                         }}
                       >
                         {currentSet.question}
                       </span>
-                      <span className="mt-6 text-base text-[var(--text-muted)] flex items-center gap-2 shrink-0">
-                        <RotateCw size={18} /> Tap to hide
+                      <span className="mt-6 text-lg text-[var(--text-muted)] flex items-center gap-2 shrink-0">
+                        <RotateCw size={20} /> Tap to hide
                       </span>
                     </div>
                   </motion.div>
