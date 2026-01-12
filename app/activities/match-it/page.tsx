@@ -349,12 +349,10 @@ export default function MatchItSetup() {
                 Setup Mode
               </h2>
               <LabeledToggle
-                isOn={mode === "ai"}
+                isRight={mode === "ai"}
                 onToggle={() => setMode(mode === "manual" ? "ai" : "manual")}
                 leftLabel="Manual"
                 rightLabel="AI Generate"
-                leftIcon={<span className="text-lg">✏️</span>}
-                rightIcon={<Sparkles size={18} />}
               />
             </motion.div>
 
