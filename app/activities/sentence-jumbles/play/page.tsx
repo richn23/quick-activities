@@ -12,6 +12,7 @@ import {
   Check,
   Home,
   Settings,
+  ChevronLeft,
 } from "lucide-react";
 import Link from "next/link";
 import { SkyToggle } from "@/components/ui/sky-toggle";
@@ -326,7 +327,6 @@ export default function SentenceJumblesPlay() {
 
   // Render a single sentence
   const renderSentence = (sentenceIndex: number, isActive: boolean = true) => {
-    const sentence = gameData.sentences[sentenceIndex];
     const placed = placedWords[sentenceIndex] || [];
     const available = availableWords[sentenceIndex] || [];
     const isRevealed = revealed[sentenceIndex];
