@@ -284,7 +284,7 @@ export default function Home() {
               className="text-xl md:text-2xl font-bold mb-6 text-center"
               style={{ color: "var(--text-primary)" }}
             >
-              Coming Soon
+              Skill Builders
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
