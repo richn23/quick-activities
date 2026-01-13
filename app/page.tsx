@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { Sparkles, BookOpen, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { BackgroundPaths } from "@/components/ui/background-paths";
 import GradientText from "@/components/ui/gradient-text";
@@ -272,6 +272,75 @@ export default function Home() {
               ))}
             </motion.div>
           </div>
+
+          {/* Coming Soon Sections */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="max-w-7xl mx-auto mt-12"
+          >
+            <h2 
+              className="text-xl md:text-2xl font-bold mb-6 text-center"
+              style={{ color: "var(--text-primary)" }}
+            >
+              Coming Soon
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
+              {/* Reading Skills */}
+              <div className="glass-card p-6 opacity-75">
+                <div className="flex items-center gap-4">
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br from-emerald-500 to-green-500 opacity-70`}>
+                    <BookOpen size={28} className="text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-bold text-lg" style={{ color: "var(--text-primary)" }}>
+                        Reading Skills
+                      </h3>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                        isDark 
+                          ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" 
+                          : "bg-amber-500/15 text-amber-600 border border-amber-500/25"
+                      }`}>
+                        Soon
+                      </span>
+                    </div>
+                    <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+                      Build complete reading lessons from any text. Pre-reading, comprehension, and post-reading tasks.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Speaking Skills */}
+              <div className="glass-card p-6 opacity-75">
+                <div className="flex items-center gap-4">
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br from-violet-500 to-purple-500 opacity-70`}>
+                    <MessageCircle size={28} className="text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-bold text-lg" style={{ color: "var(--text-primary)" }}>
+                        Speaking Skills
+                      </h3>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                        isDark 
+                          ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" 
+                          : "bg-amber-500/15 text-amber-600 border border-amber-500/25"
+                      }`}>
+                        Soon
+                      </span>
+                    </div>
+                    <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+                      Timed talks, discussion prompts, and fluency activities. Teacher-led, no recording.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </main>
 
         {/* Footer */}
