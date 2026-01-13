@@ -261,7 +261,7 @@ export default function TimedTalkPresent() {
               >
                 <li>• You will speak for a set amount of time</li>
                 <li>• Use the points to help organise your ideas</li>
-                <li>• Don't worry about mistakes</li>
+                <li>• Don&apos;t worry about mistakes</li>
                 <li>• Focus on communicating clearly</li>
               </ul>
             </div>

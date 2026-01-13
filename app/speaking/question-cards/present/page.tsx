@@ -419,7 +419,7 @@ export default function QuestionCardsPresent() {
               className="text-3xl md:text-5xl font-black mb-4"
               style={{ color: "var(--text-primary)" }}
             >
-              That's the end of the cards.
+              That&apos;s the end of the cards.
             </h2>
 
             <p

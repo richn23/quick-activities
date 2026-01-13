@@ -241,7 +241,7 @@ export default function FourThreeTwoPresent() {
                 >
                   <li>• Speak more fluently each time</li>
                   <li>• Say the same ideas more clearly</li>
-                  <li>• Don't worry about mistakes</li>
+                  <li>• Don&apos;t worry about mistakes</li>
                 </ul>
               </div>
 
@@ -292,7 +292,7 @@ export default function FourThreeTwoPresent() {
                 className="text-2xl md:text-4xl font-bold leading-relaxed"
                 style={{ color: "var(--text-primary)" }}
               >
-                "{session.prompt}"
+                &quot;{session.prompt}&quot;
               </p>
             </div>
 
@@ -405,7 +405,7 @@ export default function FourThreeTwoPresent() {
                 className="text-xl md:text-2xl font-medium leading-relaxed"
                 style={{ color: "var(--text-primary)" }}
               >
-                "{session.prompt}"
+                &quot;{session.prompt}&quot;
               </p>
             </div>
 
@@ -454,7 +454,7 @@ export default function FourThreeTwoPresent() {
               className="text-4xl md:text-6xl font-black mb-8"
               style={{ color: "var(--text-primary)" }}
             >
-              Time's up.
+              Time&apos;s up.
             </h2>
 
             <p

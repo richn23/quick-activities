@@ -246,7 +246,7 @@ export default function SpeakingPage() {
                   className="text-sm leading-relaxed"
                   style={{ color: "var(--text-secondary)" }}
                 >
-                  You control the timing, grouping, and follow-up. The whiteboard supports — it doesn't dictate.
+                  You control the timing, grouping, and follow-up. The whiteboard supports — it doesn&apos;t dictate.
                 </p>
               </div>
 

@@ -300,7 +300,7 @@ export default function AgreeDisagreeSetup() {
                             className="text-lg font-medium"
                             style={{ color: "var(--text-primary)" }}
                           >
-                            "{editedStatement}"
+                            &quot;{editedStatement}&quot;
                           </p>
                         </div>
                       )}

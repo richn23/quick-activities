@@ -197,7 +197,7 @@ export default function AgreeDisagreePresent() {
                 className="text-2xl md:text-4xl font-bold leading-relaxed"
                 style={{ color: "var(--text-primary)" }}
               >
-                "{session.statement}"
+                &quot;{session.statement}&quot;
               </p>
             </div>
 
@@ -240,7 +240,7 @@ export default function AgreeDisagreePresent() {
                 className="text-xl md:text-2xl font-medium"
                 style={{ color: "var(--text-primary)" }}
               >
-                "{session.statement}"
+                &quot;{session.statement}&quot;
               </p>
             </div>
 
