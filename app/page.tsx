@@ -288,10 +288,10 @@ export default function Home() {
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
-              {/* Reading Skills */}
-              <div className="glass-card p-6 opacity-75">
+              {/* Reading Skills - Coming Soon but clickable */}
+              <Link href="/reading" className="glass-card p-6 opacity-75 hover:opacity-100 hover:scale-[1.02] transition-all cursor-pointer">
                 <div className="flex items-center gap-4">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br from-emerald-500 to-green-500 opacity-70`}>
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br from-emerald-500 to-green-500`}>
                     <BookOpen size={28} className="text-white" />
                   </div>
                   <div className="flex-1">
@@ -312,12 +312,12 @@ export default function Home() {
                     </p>
                   </div>
                 </div>
-              </div>
+              </Link>
 
-              {/* Speaking Skills */}
-              <div className="glass-card p-6 opacity-75">
+              {/* Speaking Skills - Active */}
+              <Link href="/speaking" className="glass-card p-6 hover:scale-[1.02] transition-all cursor-pointer">
                 <div className="flex items-center gap-4">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br from-violet-500 to-purple-500 opacity-70`}>
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br from-violet-500 to-purple-500`}>
                     <MessageCircle size={28} className="text-white" />
                   </div>
                   <div className="flex-1">
@@ -325,20 +325,13 @@ export default function Home() {
                       <h3 className="font-bold text-lg" style={{ color: "var(--text-primary)" }}>
                         Speaking Skills
                       </h3>
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                        isDark 
-                          ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" 
-                          : "bg-amber-500/15 text-amber-600 border border-amber-500/25"
-                      }`}>
-                        Soon
-                      </span>
                     </div>
                     <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
                       Timed talks, discussion prompts, and fluency activities. Teacher-led, no recording.
                     </p>
                   </div>
                 </div>
-              </div>
+              </Link>
             </div>
           </motion.div>
         </main>
