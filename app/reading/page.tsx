@@ -6,7 +6,6 @@ import {
   Home,
   FileText,
   Sparkles,
-  ImageIcon,
   Upload,
   RefreshCw,
   ChevronRight,
@@ -20,7 +19,7 @@ import { useRouter } from "next/navigation";
 import { BackgroundPaths } from "@/components/ui/background-paths";
 import { SkyToggle } from "@/components/ui/sky-toggle";
 
-type InputMethod = "paste" | "generate" | "image" | null;
+type InputMethod = "paste" | "generate" | "document" | null;
 type CEFRLevel = "A1" | "A2" | "B1" | "B2" | "C1";
 type TextLength = "short" | "medium" | "long";
 type TextType = "article" | "story" | "dialogue" | "email" | "blog" | "news";
@@ -68,11 +67,11 @@ export default function ReadingSetup() {
   const [genType, setGenType] = useState<TextType>("article");
   const [generating, setGenerating] = useState(false);
   
-  // Image upload state
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  // Document upload state
+  const [docFile, setDocFile] = useState<File | null>(null);
+  const [docPreview, setDocPreview] = useState<string | null>(null);
   const [extracting, setExtracting] = useState(false);
-  const imageInputRef = useRef<HTMLInputElement>(null);
+  const docInputRef = useRef<HTMLInputElement>(null);
   
   // Final text state
   const [finalText, setFinalText] = useState("");
@@ -107,17 +106,24 @@ export default function ReadingSetup() {
     }
   };
 
-  // Handle image upload
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle document upload
+  const handleDocUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setImageFile(file);
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setImagePreview(e.target?.result as string);
-    };
-    reader.readAsDataURL(file);
+    setDocFile(file);
+    
+    // For images, show preview; for documents, just store the file
+    if (file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setDocPreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      // For PDF, DOCX, PPTX - no visual preview, just show filename
+      setDocPreview(null);
+    }
   };
 
   // Analyse text
@@ -201,9 +207,9 @@ export default function ReadingSetup() {
     }
   };
 
-  // Extract text from image
-  const extractFromImage = async () => {
-    if (!imageFile) return;
+  // Extract text from document
+  const extractFromDocument = async () => {
+    if (!docFile) return;
     
     setExtracting(true);
 
@@ -215,8 +221,19 @@ export default function ReadingSetup() {
           const result = reader.result as string;
           resolve(result.split(",")[1]); // Remove data URL prefix
         };
-        reader.readAsDataURL(imageFile);
+        reader.readAsDataURL(docFile);
       });
+
+      // Determine the media type
+      let mediaType = docFile.type;
+      // Normalize some common types
+      if (docFile.name.endsWith(".docx")) {
+        mediaType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+      } else if (docFile.name.endsWith(".pptx")) {
+        mediaType = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+      } else if (docFile.name.endsWith(".pdf")) {
+        mediaType = "application/pdf";
+      }
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/extract-text-from-image`,
@@ -227,13 +244,17 @@ export default function ReadingSetup() {
             Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
           },
           body: JSON.stringify({
-            image_base64: base64,
-            media_type: imageFile.type,
+            file_base64: base64,
+            media_type: mediaType,
+            filename: docFile.name,
           }),
         }
       );
 
-      if (!response.ok) throw new Error("Extraction failed");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Extraction failed");
+      }
 
       const data = await response.json();
       const text = data.text || "";
@@ -241,7 +262,7 @@ export default function ReadingSetup() {
       await analyseText(text);
     } catch (error) {
       console.error("Extraction error:", error);
-      alert("Failed to extract text from image. Please try again or paste the text directly.");
+      alert(error instanceof Error ? error.message : "Failed to extract text. Please try again or paste the text directly.");
     } finally {
       setExtracting(false);
     }
@@ -556,36 +577,36 @@ export default function ReadingSetup() {
                   </AnimatePresence>
                 </motion.div>
 
-                {/* Image Upload Tile */}
+                {/* Document Upload Tile */}
                 <motion.div
                   layout
                   className="glass-card overflow-hidden"
                 >
                   <button
-                    onClick={() => selectMethod(inputMethod === "image" ? null : "image")}
+                    onClick={() => selectMethod(inputMethod === "document" ? null : "document")}
                     className="w-full p-6 text-left flex items-center gap-4 hover:bg-[var(--glass-bg)] transition-all"
                   >
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white">
-                      <ImageIcon size={24} />
+                      <Upload size={24} />
                     </div>
                     <div className="flex-1">
                       <h3 className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>
-                        Upload Image
+                        Upload Document
                       </h3>
                       <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-                        Photo of textbook page or handout
+                        PDF, Word, PowerPoint, or image
                       </p>
                     </div>
                     <ChevronRight
                       size={20}
                       className={`text-[var(--text-muted)] transition-transform ${
-                        inputMethod === "image" ? "rotate-90" : ""
+                        inputMethod === "document" ? "rotate-90" : ""
                       }`}
                     />
                   </button>
 
                   <AnimatePresence>
-                    {inputMethod === "image" && (
+                    {inputMethod === "document" && (
                       <motion.div
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
@@ -595,37 +616,51 @@ export default function ReadingSetup() {
                         <div className="p-6 space-y-4">
                           <input
                             type="file"
-                            ref={imageInputRef}
-                            onChange={handleImageUpload}
-                            accept="image/*"
+                            ref={docInputRef}
+                            onChange={handleDocUpload}
+                            accept="image/*,.pdf,.doc,.docx,.ppt,.pptx"
                             className="hidden"
                           />
                           
-                          {!imagePreview ? (
+                          {!docFile ? (
                             <button
-                              onClick={() => imageInputRef.current?.click()}
+                              onClick={() => docInputRef.current?.click()}
                               className="w-full h-48 rounded-xl border-2 border-dashed border-[var(--glass-border)] hover:border-amber-500/50 flex flex-col items-center justify-center gap-3 transition-all"
                             >
-                              <ImageIcon size={40} className="text-[var(--text-muted)]" />
+                              <Upload size={40} className="text-[var(--text-muted)]" />
                               <p style={{ color: "var(--text-secondary)" }}>
                                 Click to upload or drag and drop
                               </p>
                               <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-                                PNG, JPG, WEBP up to 10MB
+                                PDF, DOCX, PPTX, or images up to 10MB
                               </p>
                             </button>
                           ) : (
                             <div className="space-y-4">
                               <div className="relative">
-                                <img
-                                  src={imagePreview}
-                                  alt="Preview"
-                                  className="w-full max-h-64 object-contain rounded-xl"
-                                />
+                                {docPreview ? (
+                                  // Image preview
+                                  <img
+                                    src={docPreview}
+                                    alt="Preview"
+                                    className="w-full max-h-64 object-contain rounded-xl"
+                                  />
+                                ) : (
+                                  // Document file display
+                                  <div className="w-full p-8 rounded-xl bg-[var(--glass-bg)] border border-[var(--glass-border)] flex flex-col items-center justify-center gap-3">
+                                    <FileText size={48} className="text-amber-500" />
+                                    <p className="font-medium text-center" style={{ color: "var(--text-primary)" }}>
+                                      {docFile.name}
+                                    </p>
+                                    <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+                                      {(docFile.size / 1024 / 1024).toFixed(2)} MB
+                                    </p>
+                                  </div>
+                                )}
                                 <button
                                   onClick={() => {
-                                    setImageFile(null);
-                                    setImagePreview(null);
+                                    setDocFile(null);
+                                    setDocPreview(null);
                                   }}
                                   className="absolute top-2 right-2 p-2 rounded-lg bg-black/50 text-white hover:bg-black/70 transition-all"
                                 >
@@ -635,7 +670,7 @@ export default function ReadingSetup() {
                               
                               <div className="flex justify-end">
                                 <button
-                                  onClick={extractFromImage}
+                                  onClick={extractFromDocument}
                                   disabled={extracting}
                                   className="px-6 py-3 rounded-xl font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white flex items-center gap-2 hover:scale-105 transition-all"
                                 >
@@ -683,8 +718,8 @@ export default function ReadingSetup() {
                       setFinalText("");
                       setAnalysis(null);
                       setPastedText("");
-                      setImageFile(null);
-                      setImagePreview(null);
+                      setDocFile(null);
+                      setDocPreview(null);
                     }}
                     className="text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] flex items-center gap-1"
                   >
