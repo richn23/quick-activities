@@ -19,7 +19,7 @@ import { AnimatedPaths } from "@/components/ui/animated-paths";
 type ScaleType = "simple" | "extended";
 
 interface SessionData {
-  statement: string;
+  statements: string[];
   scaleType: ScaleType;
   showFeedback: boolean;
 }
@@ -31,6 +31,7 @@ type SlideType =
   | "pairing"
   | "discussion"
   | "reflection"
+  | "next-statement"
   | "exit";
 
 export default function AgreeDisagreePresent() {
@@ -59,6 +60,7 @@ export default function AgreeDisagreePresent() {
   // Session data
   const [session, setSession] = useState<SessionData | null>(null);
   const [currentSlide, setCurrentSlide] = useState<SlideType>("instructions");
+  const [currentStatementIndex, setCurrentStatementIndex] = useState(0);
 
   // Tally state
   const [tally, setTally] = useState({
@@ -74,6 +76,10 @@ export default function AgreeDisagreePresent() {
     if (stored) {
       try {
         const data = JSON.parse(stored) as SessionData;
+        // Handle legacy single statement format
+        if ((data as unknown as { statement?: string }).statement) {
+          data.statements = [(data as unknown as { statement: string }).statement];
+        }
         setSession(data);
       } catch {
         router.push("/speaking/agree-disagree");
@@ -83,7 +89,12 @@ export default function AgreeDisagreePresent() {
     }
   }, [router]);
 
-  // Slide sequence
+  // Get current statement
+  const currentStatement = session?.statements?.[currentStatementIndex] || "";
+  const totalStatements = session?.statements?.length || 1;
+  const isLastStatement = currentStatementIndex >= totalStatements - 1;
+
+  // Slide sequence for a single statement
   const getNextSlide = (current: SlideType): SlideType | null => {
     const sequence: SlideType[] = [
       "instructions",
@@ -96,7 +107,13 @@ export default function AgreeDisagreePresent() {
     if (session?.showFeedback) {
       sequence.push("reflection");
     }
-    sequence.push("exit");
+
+    // After the cycle, either go to next statement or exit
+    if (isLastStatement) {
+      sequence.push("exit");
+    } else {
+      sequence.push("next-statement");
+    }
 
     const currentIndex = sequence.indexOf(current);
     if (currentIndex < sequence.length - 1) {
@@ -110,6 +127,13 @@ export default function AgreeDisagreePresent() {
     if (next) {
       setCurrentSlide(next);
     }
+  };
+
+  // Move to next statement
+  const goToNextStatement = () => {
+    setCurrentStatementIndex((prev) => prev + 1);
+    resetTally();
+    setCurrentSlide("thinking"); // Skip instructions for subsequent statements
   };
 
   // Tally functions
@@ -139,6 +163,34 @@ export default function AgreeDisagreePresent() {
     );
   }
 
+  // Progress indicator component
+  const ProgressIndicator = () => {
+    if (totalStatements <= 1) return null;
+    
+    return (
+      <div className="flex items-center justify-center gap-2 mb-6">
+        {session.statements.map((_, index) => (
+          <div
+            key={index}
+            className={`w-3 h-3 rounded-full transition-all ${
+              index === currentStatementIndex
+                ? "bg-amber-500 scale-125"
+                : index < currentStatementIndex
+                ? "bg-amber-500/50"
+                : "bg-[var(--glass-border)]"
+            }`}
+          />
+        ))}
+        <span
+          className="ml-2 text-sm"
+          style={{ color: "var(--text-muted)" }}
+        >
+          {currentStatementIndex + 1} of {totalStatements}
+        </span>
+      </div>
+    );
+  };
+
   // Render slide content
   const renderSlide = () => {
     switch (currentSlide) {
@@ -156,6 +208,15 @@ export default function AgreeDisagreePresent() {
               Agree / Disagree
             </h2>
 
+            {totalStatements > 1 && (
+              <p
+                className="text-xl mb-6"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Today we have <span className="text-amber-500 font-bold">{totalStatements} statements</span> to discuss.
+              </p>
+            )}
+
             <div className="glass-card p-8 md:p-12 text-left">
               <ul
                 className="space-y-4 text-xl md:text-2xl"
@@ -172,7 +233,7 @@ export default function AgreeDisagreePresent() {
               onClick={nextSlide}
               className="mt-8 px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-lg flex items-center gap-2 mx-auto hover:scale-105 transition-all"
             >
-              Continue
+              {totalStatements > 1 ? "Start first statement" : "Continue"}
               <ChevronRight size={24} />
             </button>
           </motion.div>
@@ -185,11 +246,13 @@ export default function AgreeDisagreePresent() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center max-w-4xl mx-auto"
           >
+            <ProgressIndicator />
+            
             <p
               className="text-xl md:text-2xl mb-6"
               style={{ color: "var(--text-muted)" }}
             >
-              STATEMENT
+              STATEMENT {totalStatements > 1 ? `${currentStatementIndex + 1}` : ""}
             </p>
 
             <div className="glass-card p-8 md:p-12 mb-8">
@@ -197,7 +260,7 @@ export default function AgreeDisagreePresent() {
                 className="text-2xl md:text-4xl font-bold leading-relaxed"
                 style={{ color: "var(--text-primary)" }}
               >
-                &quot;{session.statement}&quot;
+                &quot;{currentStatement}&quot;
               </p>
             </div>
 
@@ -227,6 +290,8 @@ export default function AgreeDisagreePresent() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center max-w-5xl mx-auto"
           >
+            <ProgressIndicator />
+            
             <p
               className="text-xl md:text-2xl mb-4"
               style={{ color: "var(--text-muted)" }}
@@ -240,7 +305,7 @@ export default function AgreeDisagreePresent() {
                 className="text-xl md:text-2xl font-medium"
                 style={{ color: "var(--text-primary)" }}
               >
-                &quot;{session.statement}&quot;
+                &quot;{currentStatement}&quot;
               </p>
             </div>
 
@@ -444,6 +509,8 @@ export default function AgreeDisagreePresent() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center max-w-3xl mx-auto"
           >
+            <ProgressIndicator />
+            
             <h2
               className="text-3xl md:text-5xl font-black mb-4"
               style={{ color: "var(--text-primary)" }}
@@ -482,6 +549,8 @@ export default function AgreeDisagreePresent() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center max-w-3xl mx-auto"
           >
+            <ProgressIndicator />
+            
             <p
               className="text-xl mb-4"
               style={{ color: "var(--text-muted)" }}
@@ -517,6 +586,8 @@ export default function AgreeDisagreePresent() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center max-w-3xl mx-auto"
           >
+            <ProgressIndicator />
+            
             <p
               className="text-xl mb-4"
               style={{ color: "var(--text-muted)" }}
@@ -545,6 +616,39 @@ export default function AgreeDisagreePresent() {
           </motion.div>
         );
 
+      case "next-statement":
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center max-w-3xl mx-auto"
+          >
+            <ProgressIndicator />
+            
+            <h2
+              className="text-3xl md:text-5xl font-black mb-4"
+              style={{ color: "var(--text-primary)" }}
+            >
+              Ready for the next one?
+            </h2>
+
+            <p
+              className="text-xl mb-8"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              {totalStatements - currentStatementIndex - 1} statement{totalStatements - currentStatementIndex - 1 !== 1 ? "s" : ""} remaining
+            </p>
+
+            <button
+              onClick={goToNextStatement}
+              className="px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-lg flex items-center gap-2 mx-auto hover:scale-105 transition-all"
+            >
+              Next statement
+              <ChevronRight size={24} />
+            </button>
+          </motion.div>
+        );
+
       case "exit":
         return (
           <motion.div
@@ -553,22 +657,32 @@ export default function AgreeDisagreePresent() {
             className="text-center max-w-3xl mx-auto"
           >
             <h2
-              className="text-3xl md:text-5xl font-black mb-8"
+              className="text-3xl md:text-5xl font-black mb-4"
               style={{ color: "var(--text-primary)" }}
             >
-              What would you like to do next?
+              {totalStatements > 1 ? "All statements complete!" : "What would you like to do next?"}
             </h2>
+
+            {totalStatements > 1 && (
+              <p
+                className="text-xl mb-8"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                You discussed {totalStatements} statements today.
+              </p>
+            )}
 
             <div className="space-y-4">
               <button
                 onClick={() => {
+                  setCurrentStatementIndex(0);
                   setCurrentSlide("instructions");
                   resetTally();
                 }}
                 className="w-full max-w-md mx-auto px-6 py-4 rounded-2xl glass-card text-[var(--text-primary)] hover:text-amber-500 font-bold text-lg flex items-center justify-center gap-2 transition-all"
               >
                 <RefreshCw size={20} />
-                Repeat with same statement
+                {totalStatements > 1 ? "Repeat all statements" : "Repeat with same statement"}
               </button>
 
               <Link
@@ -576,7 +690,7 @@ export default function AgreeDisagreePresent() {
                 className="w-full max-w-md mx-auto px-6 py-4 rounded-2xl glass-card text-[var(--text-primary)] hover:text-amber-500 font-bold text-lg flex items-center justify-center gap-2 transition-all"
               >
                 <Settings size={20} />
-                Create new statement
+                Create new statements
               </Link>
 
               <Link
@@ -624,7 +738,7 @@ export default function AgreeDisagreePresent() {
         <main className="flex-1 flex items-center justify-center px-8 py-24">
           <AnimatePresence mode="wait">
             <motion.div
-              key={currentSlide}
+              key={`${currentSlide}-${currentStatementIndex}`}
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -50 }}

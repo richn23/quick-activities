@@ -8,6 +8,8 @@ import {
   RefreshCw,
   Play,
   Edit3,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -19,7 +21,7 @@ type PromptSource = "ai" | "manual";
 type ScaleType = "simple" | "extended";
 
 interface SessionData {
-  statement: string;
+  statements: string[];
   scaleType: ScaleType;
   showFeedback: boolean;
 }
@@ -49,24 +51,66 @@ export default function AgreeDisagreeSetup() {
 
   // Form state
   const [promptSource, setPromptSource] = useState<PromptSource>("ai");
-  const [manualStatement, setManualStatement] = useState("");
+  const [numStatements, setNumStatements] = useState(1);
   
   // AI state
   const [cefrLevel, setCefrLevel] = useState<CEFRLevel>("B1");
   const [aiGuidance, setAiGuidance] = useState("");
-  const [generatedStatement, setGeneratedStatement] = useState("");
-  const [editedStatement, setEditedStatement] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
+  const [generatedStatements, setGeneratedStatements] = useState<string[]>([]);
   const [generating, setGenerating] = useState(false);
+
+  // Manual state
+  const [manualStatements, setManualStatements] = useState<string[]>([""]);
 
   // Shared settings
   const [scaleType, setScaleType] = useState<ScaleType>("simple");
   const [showFeedback, setShowFeedback] = useState(true);
 
-  // Generate statement via AI
-  const generateStatement = async () => {
+  // Generate statements via AI
+  const generateStatements = async () => {
     setGenerating(true);
 
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/generate-agree-disagree`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({
+            cefr_level: cefrLevel,
+            guidance: aiGuidance || undefined,
+            num_statements: numStatements,
+          }),
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to generate statements");
+
+      const data = await response.json();
+      const statements = data.statements || [];
+      
+      setGeneratedStatements(statements);
+    } catch (error) {
+      console.error("Error generating statements:", error);
+      // Fallback
+      const fallbacks = [
+        "People learn languages better through experience than through grammar study.",
+        "Social media has improved the way we communicate with each other.",
+        "Everyone should learn to cook their own meals.",
+        "Working from home is better than working in an office.",
+        "Schools should teach financial literacy from a young age.",
+      ];
+      setGeneratedStatements(fallbacks.slice(0, numStatements));
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  // Regenerate single statement
+  const regenerateSingle = async (index: number) => {
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/generate-agree-disagree`,
@@ -84,40 +128,61 @@ export default function AgreeDisagreeSetup() {
         }
       );
 
-      if (!response.ok) throw new Error("Failed to generate statement");
+      if (!response.ok) throw new Error("Failed to regenerate");
 
       const data = await response.json();
-      const statement = data.statements?.[0] || "";
+      const newStatement = data.statements?.[0];
       
-      setGeneratedStatement(statement);
-      setEditedStatement(statement);
-      setIsEditing(false);
+      if (newStatement) {
+        const updated = [...generatedStatements];
+        updated[index] = newStatement;
+        setGeneratedStatements(updated);
+      }
     } catch (error) {
-      console.error("Error generating statement:", error);
-      // Fallback
-      const fallback = "People learn languages better through experience than through grammar study.";
-      setGeneratedStatement(fallback);
-      setEditedStatement(fallback);
-    } finally {
-      setGenerating(false);
+      console.error("Error regenerating statement:", error);
     }
   };
 
-  // Get final statement
-  const getFinalStatement = (): string => {
-    if (promptSource === "manual") {
-      return manualStatement.trim();
+  // Update generated statement
+  const updateGeneratedStatement = (index: number, value: string) => {
+    const updated = [...generatedStatements];
+    updated[index] = value;
+    setGeneratedStatements(updated);
+  };
+
+  // Manual statement management
+  const addManualStatement = () => {
+    setManualStatements([...manualStatements, ""]);
+  };
+
+  const removeManualStatement = (index: number) => {
+    if (manualStatements.length > 1) {
+      const updated = manualStatements.filter((_, i) => i !== index);
+      setManualStatements(updated);
     }
-    return editedStatement.trim();
+  };
+
+  const updateManualStatement = (index: number, value: string) => {
+    const updated = [...manualStatements];
+    updated[index] = value;
+    setManualStatements(updated);
+  };
+
+  // Get final statements
+  const getFinalStatements = (): string[] => {
+    if (promptSource === "manual") {
+      return manualStatements.filter((s) => s.trim().length > 0);
+    }
+    return generatedStatements.filter((s) => s.trim().length > 0);
   };
 
   // Check if ready to start
-  const canStart = getFinalStatement().length > 0;
+  const canStart = getFinalStatements().length > 0;
 
   // Start activity
   const handleStart = () => {
     const sessionData: SessionData = {
-      statement: getFinalStatement(),
+      statements: getFinalStatements(),
       scaleType,
       showFeedback,
     };
@@ -167,7 +232,7 @@ export default function AgreeDisagreeSetup() {
                 className="text-lg font-bold mb-4"
                 style={{ color: "var(--text-primary)" }}
               >
-                Statement
+                Statements
               </h2>
 
               {/* Radio Buttons */}
@@ -193,7 +258,7 @@ export default function AgreeDisagreeSetup() {
                     className="w-4 h-4 accent-amber-500"
                   />
                   <span style={{ color: "var(--text-primary)" }}>
-                    Write my own statement
+                    Write my own
                   </span>
                 </label>
               </div>
@@ -205,6 +270,31 @@ export default function AgreeDisagreeSetup() {
                   animate={{ opacity: 1, y: 0 }}
                   className="space-y-4"
                 >
+                  {/* Number of Statements */}
+                  <div>
+                    <label
+                      className="block text-sm mb-2"
+                      style={{ color: "var(--text-muted)" }}
+                    >
+                      Number of statements
+                    </label>
+                    <div className="flex gap-2">
+                      {[1, 2, 3, 4, 5].map((num) => (
+                        <button
+                          key={num}
+                          onClick={() => setNumStatements(num)}
+                          className={`w-10 h-10 rounded-lg font-medium transition-all ${
+                            numStatements === num
+                              ? "bg-amber-500 text-white"
+                              : "glass-card text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                          }`}
+                        >
+                          {num}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* CEFR Level */}
                   <div>
                     <label
@@ -236,7 +326,7 @@ export default function AgreeDisagreeSetup() {
                       className="block text-sm mb-2"
                       style={{ color: "var(--text-muted)" }}
                     >
-                      Optional guidance for the statement
+                      Optional topic guidance
                     </label>
                     <textarea
                       value={aiGuidance}
@@ -248,7 +338,7 @@ export default function AgreeDisagreeSetup() {
 
                   {/* Generate Button */}
                   <button
-                    onClick={generateStatement}
+                    onClick={generateStatements}
                     disabled={generating}
                     className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold flex items-center gap-2 hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100"
                   >
@@ -260,58 +350,59 @@ export default function AgreeDisagreeSetup() {
                     ) : (
                       <>
                         <Sparkles size={18} />
-                        Generate statement
+                        Generate {numStatements === 1 ? "statement" : "statements"}
                       </>
                     )}
                   </button>
 
-                  {/* Generated Statement */}
-                  {generatedStatement && (
+                  {/* Generated Statements */}
+                  {generatedStatements.length > 0 && (
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="mt-4"
+                      className="mt-4 space-y-3"
                     >
-                      <div className="flex items-center justify-between mb-2">
-                        <span
-                          className="text-sm font-medium"
-                          style={{ color: "var(--text-muted)" }}
-                        >
-                          Generated statement:
-                        </span>
-                        <button
-                          onClick={() => setIsEditing(!isEditing)}
-                          className="text-sm flex items-center gap-1 text-amber-500 hover:text-amber-400"
-                        >
-                          <Edit3 size={14} />
-                          {isEditing ? "Done" : "Edit"}
-                        </button>
-                      </div>
+                      <p
+                        className="text-sm font-medium"
+                        style={{ color: "var(--text-muted)" }}
+                      >
+                        Generated statements (edit as needed):
+                      </p>
 
-                      {isEditing ? (
-                        <textarea
-                          value={editedStatement}
-                          onChange={(e) => setEditedStatement(e.target.value)}
-                          className="w-full h-24 p-4 rounded-xl bg-[var(--glass-bg)] border border-[var(--glass-border)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-amber-500/50 resize-none"
-                        />
-                      ) : (
-                        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
-                          <p
-                            className="text-lg font-medium"
-                            style={{ color: "var(--text-primary)" }}
-                          >
-                            &quot;{editedStatement}&quot;
-                          </p>
+                      {generatedStatements.map((statement, index) => (
+                        <div
+                          key={index}
+                          className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30"
+                        >
+                          <div className="flex items-start gap-3">
+                            <span
+                              className="w-6 h-6 rounded-full bg-amber-500 text-white text-sm font-bold flex items-center justify-center flex-shrink-0 mt-1"
+                            >
+                              {index + 1}
+                            </span>
+                            <textarea
+                              value={statement}
+                              onChange={(e) => updateGeneratedStatement(index, e.target.value)}
+                              className="flex-1 bg-transparent text-[var(--text-primary)] focus:outline-none resize-none min-h-[60px]"
+                            />
+                            <button
+                              onClick={() => regenerateSingle(index)}
+                              className="p-2 rounded-lg text-amber-500 hover:text-amber-400 hover:bg-amber-500/10 transition-all"
+                              title="Regenerate this statement"
+                            >
+                              <RefreshCw size={16} />
+                            </button>
+                          </div>
                         </div>
-                      )}
+                      ))}
 
                       <button
-                        onClick={generateStatement}
+                        onClick={generateStatements}
                         disabled={generating}
-                        className="mt-3 text-sm text-amber-500 hover:text-amber-400 flex items-center gap-1"
+                        className="text-sm text-amber-500 hover:text-amber-400 flex items-center gap-1"
                       >
                         <RefreshCw size={14} />
-                        Regenerate
+                        Regenerate all
                       </button>
                     </motion.div>
                   )}
@@ -323,19 +414,47 @@ export default function AgreeDisagreeSetup() {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
+                  className="space-y-4"
                 >
-                  <label
-                    className="block text-sm mb-2"
+                  <p
+                    className="text-sm"
                     style={{ color: "var(--text-muted)" }}
                   >
-                    Write your statement
-                  </label>
-                  <textarea
-                    value={manualStatement}
-                    onChange={(e) => setManualStatement(e.target.value)}
-                    placeholder="e.g., Everyone should learn to cook their own meals."
-                    className="w-full h-32 p-4 rounded-xl bg-[var(--glass-bg)] border border-[var(--glass-border)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-amber-500/50 resize-none"
-                  />
+                    Add one or more statements for discussion:
+                  </p>
+
+                  {manualStatements.map((statement, index) => (
+                    <div key={index} className="flex items-start gap-3">
+                      <span
+                        className="w-6 h-6 rounded-full bg-amber-500 text-white text-sm font-bold flex items-center justify-center flex-shrink-0 mt-3"
+                      >
+                        {index + 1}
+                      </span>
+                      <textarea
+                        value={statement}
+                        onChange={(e) => updateManualStatement(index, e.target.value)}
+                        placeholder={`Statement ${index + 1}...`}
+                        className="flex-1 h-20 p-4 rounded-xl bg-[var(--glass-bg)] border border-[var(--glass-border)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-amber-500/50 resize-none"
+                      />
+                      {manualStatements.length > 1 && (
+                        <button
+                          onClick={() => removeManualStatement(index)}
+                          className="p-3 rounded-lg text-red-500 hover:bg-red-500/10 transition-all mt-1"
+                          title="Remove statement"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+
+                  <button
+                    onClick={addManualStatement}
+                    className="text-sm text-amber-500 hover:text-amber-400 flex items-center gap-1"
+                  >
+                    <Plus size={16} />
+                    Add another statement
+                  </button>
                 </motion.div>
               )}
             </section>
@@ -396,7 +515,7 @@ export default function AgreeDisagreeSetup() {
                       className="w-5 h-5 rounded accent-amber-500"
                     />
                     <span style={{ color: "var(--text-primary)" }}>
-                      Include reflection screen after discussion
+                      Include reflection after each statement
                     </span>
                   </label>
                 </div>
@@ -416,6 +535,11 @@ export default function AgreeDisagreeSetup() {
               >
                 <Play size={24} />
                 Start Agree / Disagree
+                {getFinalStatements().length > 1 && (
+                  <span className="text-sm opacity-80">
+                    ({getFinalStatements().length} statements)
+                  </span>
+                )}
               </button>
             </div>
           </div>
