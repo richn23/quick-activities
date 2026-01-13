@@ -7,7 +7,6 @@ import {
   Sparkles,
   RefreshCw,
   Play,
-  Edit3,
   Plus,
   Trash2,
 } from "lucide-react";
