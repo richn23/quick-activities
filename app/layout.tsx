@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 // Main app font - contemporary and slightly playful
@@ -47,7 +48,10 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className={`${plusJakarta.className} antialiased`}>{children}</body>
+      <body className={`${plusJakarta.className} antialiased`}>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
