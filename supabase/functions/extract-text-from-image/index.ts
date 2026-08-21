@@ -97,7 +97,7 @@ async function extractFromImage(base64: string, mediaType: string) {
       "content-type": "application/json",
     },
     body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-5",
       max_tokens: 4000,
       messages: [
         {
@@ -148,7 +148,7 @@ async function extractFromPdf(base64: string) {
       "content-type": "application/json",
     },
     body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-5",
       max_tokens: 8000,
       messages: [
         {
@@ -201,7 +201,7 @@ async function extractFromOfficeDoc(base64: string, mediaType: string, filename:
       "content-type": "application/json",
     },
     body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-5",
       max_tokens: 8000,
       messages: [
         {
