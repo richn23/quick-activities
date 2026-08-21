@@ -51,7 +51,6 @@ async function callAnthropic(prompt: string) {
     body: JSON.stringify({
       model: "claude-sonnet-5",
       max_tokens: 2000,
-      temperature: 0.7, // Balanced temperature for creative but sensible outputs
       messages: [
         {
           role: "user",
